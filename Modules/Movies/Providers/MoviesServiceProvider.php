@@ -5,6 +5,7 @@ namespace Modules\Movies\Providers;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use Modules\Movies\Console\ImportGenresCommand;
 
 class MoviesServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,14 @@ class MoviesServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+        $this->registerCommands();
+    }
+
+    public function registerCommands(): void
+    {
+        $this->commands([
+            ImportGenresCommand::class,
+        ]);
     }
 
     /**
