@@ -4,6 +4,7 @@ namespace Modules\Movies\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Movie extends Model
 {
@@ -48,5 +49,10 @@ class Movie extends Model
     protected static function newFactory()
     {
         return \Modules\Movies\Database\factories\MovieFactory::new();
+    }
+
+    public function genres(): BelongsToMany
+    {
+        return $this->belongsToMany(Genre::class, 'movie_genres');
     }
 }
