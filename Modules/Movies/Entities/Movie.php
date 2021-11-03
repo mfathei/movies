@@ -9,6 +9,18 @@ class Movie extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'popularity' => 'float',
+        'vote_average' => 'float',
+        'release_date' => 'date',
+        'adult' => 'boolean',
+        'video' => 'boolean',
+        'budget' => 'integer',
+        'revenue' => 'integer',
+        'runtime' => 'integer',
+        'vote_count' => 'integer',
+    ];
+
     protected $fillable = [
         'id',
         'name',
