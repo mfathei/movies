@@ -24,7 +24,6 @@ class Movie extends Model
 
     protected $fillable = [
         'id',
-        'name',
         'adult',
         'backdrop_path',
         'homepage',
@@ -53,6 +52,6 @@ class Movie extends Model
 
     public function genres(): BelongsToMany
     {
-        return $this->belongsToMany(Genre::class, 'movie_genres');
+        return $this->belongsToMany(Genre::class, 'movie_genres')->withTimestamps();
     }
 }
