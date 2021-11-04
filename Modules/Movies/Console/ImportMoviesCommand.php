@@ -16,7 +16,7 @@ class ImportMoviesCommand extends Command
     /**
      * @var false|float
      */
-    private $pages;
+    protected $pages;
 
     /**
      * Create a new command instance.
