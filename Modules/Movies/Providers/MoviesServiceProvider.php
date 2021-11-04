@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Modules\Movies\Console\ImportGenresCommand;
+use Modules\Movies\Console\ImportMoviesCommand;
 
 class MoviesServiceProvider extends ServiceProvider
 {
@@ -37,6 +38,7 @@ class MoviesServiceProvider extends ServiceProvider
     {
         $this->commands([
             ImportGenresCommand::class,
+            ImportMoviesCommand::class,
         ]);
     }
 
