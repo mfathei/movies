@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\Movies\Http\Controllers\Apis\Actions\ListMoviesAction;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/movies', function (Request $request) {
-    return $request->user();
-});
+Route::get('/movies', ListMoviesAction::class);

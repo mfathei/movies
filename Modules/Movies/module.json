@@ -5,7 +5,8 @@
     "keywords": [],
     "priority": 0,
     "providers": [
-        "Modules\\Movies\\Providers\\MoviesServiceProvider"
+        "Modules\\Movies\\Providers\\MoviesServiceProvider",
+        "Modules\\Movies\\Providers\\DependencyServiceProvider"
     ],
     "aliases": {},
     "files": [],
