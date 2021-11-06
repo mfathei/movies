@@ -1,0 +1,54 @@
+{
+	"info": {
+		"_postman_id": "b9178884-f888-4249-958a-e579b0aa8ca1",
+		"name": "Movies",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:8090/api/v1/movies?category_id=10749&popular|desc&rated|asc",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8090/api/v1/movies?category_id=10749&popular|desc&rated|asc",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"v1",
+						"movies"
+					],
+					"query": [
+						{
+							"key": "category_id",
+							"value": "10749"
+						},
+						{
+							"key": "popular|desc",
+							"value": null
+						},
+						{
+							"key": "rated|asc",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
