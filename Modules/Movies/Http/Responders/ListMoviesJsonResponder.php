@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Movies\Http\Controllers\Apis\Responders;
+namespace Modules\Movies\Http\Responders;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

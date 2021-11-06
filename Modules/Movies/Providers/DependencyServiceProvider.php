@@ -3,9 +3,9 @@
 namespace Modules\Movies\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Movies\Http\Controllers\Apis\Actions\ListMoviesAction;
-use Modules\Movies\Http\Controllers\Apis\Responders\ListMoviesJsonResponder;
-use Modules\Movies\Http\Controllers\Apis\Responders\ResponderInterface;
+use Modules\Movies\Http\Actions\ListMoviesAction;
+use Modules\Movies\Http\Responders\ListMoviesJsonResponder;
+use Modules\Movies\Http\Responders\ResponderInterface;
 
 class DependencyServiceProvider extends ServiceProvider
 {
