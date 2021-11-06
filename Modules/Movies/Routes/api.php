@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Movies\Http\Controllers\Apis\Actions\ListMoviesAction;
+use Modules\Movies\Http\Actions\ListMoviesAction;
 
 /*
 |--------------------------------------------------------------------------

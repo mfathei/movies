@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Movies\Http\Controllers\Apis\Actions;
+namespace Modules\Movies\Http\Actions;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Modules\Movies\Entities\Movie;
-use Modules\Movies\Http\Controllers\Apis\Responders\ResponderInterface;
+use Modules\Movies\Http\Responders\ResponderInterface;
 use Modules\Movies\Http\Requests\ListMoviesRequest;
 
 class ListMoviesAction
@@ -16,7 +16,7 @@ class ListMoviesAction
     ];
 
     /**
-     * @var \Modules\Movies\Http\Controllers\Apis\Responders\ResponderInterface
+     * @var \Modules\Movies\Http\Responders\ResponderInterface
      */
     protected $responder;
     /**
