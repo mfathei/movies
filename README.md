@@ -12,7 +12,12 @@ I used:
 7) Mailhog.
 8) Redis.
 9) [Psalm static code analyzer](https://psalm.dev/).
-10) Postman.
+<br/>
+![img_1.png](img_1.png)
+10) Phpunit tests
+<br/>
+![img_2.png](img_2.png)
+11) Postman.
 
 To run the application follow these steps:
 1) make sure you have docker installed on your system and its service process is running
