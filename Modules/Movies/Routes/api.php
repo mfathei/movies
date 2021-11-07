@@ -14,4 +14,4 @@ use Modules\Movies\Http\Actions\ListMoviesAction;
 |
 */
 
-Route::get('/movies', ListMoviesAction::class);
+Route::get('/movies', ListMoviesAction::class)->name('movies.list');

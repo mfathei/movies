@@ -20,6 +20,7 @@ class Movie extends Model
         'revenue' => 'integer',
         'runtime' => 'integer',
         'vote_count' => 'integer',
+        'imdb_id' => 'integer',
     ];
 
     protected $fillable = [
