@@ -11,12 +11,8 @@ I used:
 6) MySql Database.
 7) Mailhog.
 8) Redis.
-9) [Psalm static code analyzer](https://psalm.dev/).
-<br/>
-![img_1.png](img_1.png)
-10) Phpunit tests
-<br/>
-![img_2.png](img_2.png)
+9) [Psalm static code analyzer](https://psalm.dev/). <br/> ![img_1.png](img_1.png).
+10) Phpunit tests<br/> ![img_2.png](img_2.png).
 11) Postman.
 
 To run the application follow these steps:
