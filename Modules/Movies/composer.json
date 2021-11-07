@@ -19,5 +19,10 @@
         "psr-4": {
             "Modules\\Movies\\": ""
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "Tests/"
+        }
     }
 }
