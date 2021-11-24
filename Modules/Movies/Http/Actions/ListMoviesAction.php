@@ -5,7 +5,6 @@ namespace Modules\Movies\Http\Actions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Modules\Movies\Contracts\MoviesRepositoryInterface;
-use Modules\Movies\Entities\Movie;
 use Modules\Movies\Http\Responders\ResponderInterface;
 use Modules\Movies\Http\Requests\ListMoviesRequest;
 

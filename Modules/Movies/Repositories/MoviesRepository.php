@@ -59,6 +59,11 @@ class MoviesRepository implements MoviesRepositoryInterface
         return $this;
     }
 
+    public function syncGenres(int $id, array $genres): array
+    {
+        return Movie::find($id)->genres()->sync($genres);
+    }
+
     public function getQuery(): Builder
     {
         return $this->query;

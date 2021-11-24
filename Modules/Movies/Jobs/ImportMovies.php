@@ -107,7 +107,7 @@ class ImportMovies implements ShouldQueue
 
             Collection::wrap($rows->results)->each(function ($row) {
                 $this->repository->updateOrInsertMovie($row->id, $row);
-                $this->syncGenres($row->id, $row->genre_ids);
+                $this->repository->syncGenres($row->id, $row->genre_ids);
             });
 
             DB::commit();
@@ -117,11 +117,6 @@ class ImportMovies implements ShouldQueue
 
             DB::rollBack();
         }
-    }
-
-    protected function syncGenres(int $id, array $genres): array
-    {
-        return Movie::find($id)->genres()->sync($genres);
     }
 
     protected function getLastExecutionTime($path): ?Carbon

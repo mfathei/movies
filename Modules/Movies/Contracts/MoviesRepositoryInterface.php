@@ -17,4 +17,6 @@ interface MoviesRepositoryInterface
     public function addSortColumns(Collection $columns): self;
 
     public function getQuery(): Builder;
+
+    public function syncGenres(int $id, array $genres): array;
 }
