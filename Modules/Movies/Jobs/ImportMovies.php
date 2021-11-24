@@ -6,32 +6,36 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Queueable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Movies\Contracts\MoviesRepositoryInterface;
 use Modules\Movies\Entities\Movie;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class ImportMovies implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public const KEY = 'movies_sync_interval';
 
-    /**
-     * @var int
-     */
+    /** @var MoviesRepositoryInterface */
+    protected $repository;
+    /** @var int */
     protected $page;
 
-    public function __construct(int $page = 1)
+    public function __construct(MoviesRepositoryInterface $repository, int $page = 1)
     {
+        $this->repository = $repository;
         $this->page = $page;
         $nextRun = $this->getNextRun();
         if ($nextRun->gt(now())) {
@@ -41,15 +45,13 @@ class ImportMovies implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function handle()
     {
         try {
             $res = $this->sendRequest();
 
-            if ($res->getStatusCode() === Response::HTTP_OK) {
+            if (Response::HTTP_OK === $res->getStatusCode()) {
                 $this->handleResponse($res);
             }
         } catch (GuzzleException $ex) {
@@ -60,19 +62,21 @@ class ImportMovies implements ShouldQueue
     }
 
     /**
-     * @return ResponseInterface
      * @throws GuzzleException
+     *
+     * @return ResponseInterface
      */
     protected function sendRequest(): ResponseInterface
     {
         $client = new Client();
 
-        return $client->request('GET',
+        return $client->request(
+            'GET',
             $this->getUrl(),
             [
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
+                    'Accept' => 'application/json',
                 ],
             ]
         );
@@ -81,7 +85,8 @@ class ImportMovies implements ShouldQueue
     protected function getNextRun(): Carbon
     {
         $lastExecutionTime = $this->getLastExecutionTime(self::KEY);
-        return $lastExecutionTime->addMinutes((int)config('movies.interval_minutes'));
+
+        return $lastExecutionTime->addMinutes((int) config('movies.interval_minutes'));
     }
 
     protected function getUrl(): string
@@ -89,7 +94,7 @@ class ImportMovies implements ShouldQueue
         $baseUrl = config('movies.api_url');
         $key = config('movies.api_key');
 
-        return "$baseUrl/movie/upcoming?api_key=$key&page=$this->page";
+        return "{$baseUrl}/movie/upcoming?api_key={$key}&page={$this->page}";
     }
 
     protected function handleResponse($response)
@@ -101,7 +106,7 @@ class ImportMovies implements ShouldQueue
             $rows = json_decode($contents, false, 512, JSON_THROW_ON_ERROR);
 
             Collection::wrap($rows->results)->each(function ($row) {
-                $this->updateOrInsertMovie($row->id, $row);
+                $this->repository->updateOrInsertMovie($row->id, $row);
                 $this->syncGenres($row->id, $row->genre_ids);
             });
 
@@ -119,31 +124,9 @@ class ImportMovies implements ShouldQueue
         return Movie::find($id)->genres()->sync($genres);
     }
 
-    protected function updateOrInsertMovie(int $id, $row): Builder
-    {
-        return Movie::updateOrInsert(
-            ['id' => $id],
-            [
-                "adult" => $row->adult,
-                "backdrop_path" => $row->backdrop_path,
-                "original_language" => $row->original_language,
-                "original_title" => $row->original_title,
-                "overview" => $row->overview,
-                "popularity" => $row->popularity,
-                "poster_path" => $row->poster_path,
-                "release_date" => $row->release_date,
-                "title" => $row->title,
-                "video" => $row->video,
-                "vote_average" => $row->vote_average,
-                "vote_count" => $row->vote_count,
-                "status" => 'Released',
-            ]
-        );
-    }
-
     protected function getLastExecutionTime($path): ?Carbon
     {
-        if (!$path) {
+        if (! $path) {
             return null;
         }
 
@@ -154,7 +137,7 @@ class ImportMovies implements ShouldQueue
 
     protected function setLastExecutionTime($path, Carbon $value): bool
     {
-        if (!$path) {
+        if (! $path) {
             return false;
         }
 
