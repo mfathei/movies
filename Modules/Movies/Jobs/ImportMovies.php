@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Movies\Contracts\MoviesRepositoryInterface;
-use Modules\Movies\Entities\Movie;
+use Modules\Movies\Utilities\ManagesIntervalRun;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,21 +26,17 @@ class ImportMovies implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public const KEY = 'movies_sync_interval';
-
     /** @var MoviesRepositoryInterface */
     protected $repository;
+
     /** @var int */
     protected $page;
 
-    public function __construct(MoviesRepositoryInterface $repository, int $page = 1)
+    public function __construct(int $page, ManagesIntervalRun $intervalManager, MoviesRepositoryInterface $repository)
     {
         $this->repository = $repository;
+        $this->intervalManager = $intervalManager;
         $this->page = $page;
-        $nextRun = $this->getNextRun();
-        if ($nextRun->gt(now())) {
-            exit('Not yet');
-        }
     }
 
     /**
@@ -55,7 +51,7 @@ class ImportMovies implements ShouldQueue
                 $this->handleResponse($res);
             }
         } catch (GuzzleException $ex) {
-            Log::error($ex, ['file' => __FILE__, 'line' => __LINE__]);
+            Log::error($ex, compact(__FILE__, __LINE__));
 
             report($ex);
         }
@@ -82,13 +78,6 @@ class ImportMovies implements ShouldQueue
         );
     }
 
-    protected function getNextRun(): Carbon
-    {
-        $lastExecutionTime = $this->getLastExecutionTime(self::KEY);
-
-        return $lastExecutionTime->addMinutes((int) config('movies.interval_minutes'));
-    }
-
     protected function getUrl(): string
     {
         $baseUrl = config('movies.api_url');
@@ -111,31 +100,11 @@ class ImportMovies implements ShouldQueue
             });
 
             DB::commit();
-            $this->setLastExecutionTime(self::KEY, now());
+            $this->intervalManager->setLastExecutionTime($this->key, now());
         } catch (Exception $e) {
-            Log::error($e, ['file' => __FILE__, 'line' => __LINE__]);
+            Log::error($e, compact(__FILE__, __LINE__));
 
             DB::rollBack();
         }
-    }
-
-    protected function getLastExecutionTime($path): ?Carbon
-    {
-        if (! $path) {
-            return null;
-        }
-
-        return cache()->remember($path, 60 * 60 * 100, static function () {
-            return now();
-        });
-    }
-
-    protected function setLastExecutionTime($path, Carbon $value): bool
-    {
-        if (! $path) {
-            return false;
-        }
-
-        return cache()->put($path, $value, 60 * 60 * 100);
     }
 }
