@@ -54,6 +54,10 @@
         ],
         "analyze": [
             "./vendor/bin/psalm"
+        ],
+        "test": [
+            "@php artisan optimize:clear",
+            "./vendor/bin/phpunit --colors=always --order-by=defects "
         ]
     },
     "extra": {
