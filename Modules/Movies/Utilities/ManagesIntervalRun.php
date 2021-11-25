@@ -14,19 +14,19 @@ class ManagesIntervalRun
     /** @var Carbon */
     protected $nextRun;
 
-    public function checkNextRun()
+    public function checkNextRun(int $minutes = 0)
     {
-        $this->nextRun = $this->getNextRun();
+        $this->nextRun = $this->getNextRun($minutes ?? (int) config('movies.interval_minutes'));
         if ($this->nextRun->gt(now())) {
             throw new RuntimeException('Not yet');
         }
     }
 
-    public function getNextRun(): Carbon
+    public function getNextRun(int $minutes): Carbon
     {
         $lastExecutionTime = $this->getLastExecutionTime(self::KEY);
 
-        return $lastExecutionTime->addMinutes((int) config('movies.interval_minutes'));
+        return $lastExecutionTime->addMinutes($minutes);
     }
 
     protected function getLastExecutionTime($path): ?Carbon
