@@ -3,6 +3,7 @@
 namespace Modules\Movies\Console;
 
 use Illuminate\Console\Command;
+use Modules\Movies\Contracts\GenresRepositoryInterface;
 use Modules\Movies\Jobs\ImportGenres;
 
 class ImportGenresCommand extends Command
@@ -28,6 +29,6 @@ class ImportGenresCommand extends Command
      */
     public function handle()
     {
-        dispatch(new ImportGenres());
+        dispatch(new ImportGenres(app(GenresRepositoryInterface::class)));
     }
 }

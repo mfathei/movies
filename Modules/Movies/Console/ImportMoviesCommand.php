@@ -3,9 +3,9 @@
 namespace Modules\Movies\Console;
 
 use Illuminate\Console\Command;
+use Modules\Movies\Contracts\MoviesRepositoryInterface;
 use Modules\Movies\Jobs\ImportMovies;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
+use Modules\Movies\Utilities\ManagesIntervalRun;
 
 class ImportMoviesCommand extends Command
 {
@@ -20,26 +20,27 @@ class ImportMoviesCommand extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
         parent::__construct();
-
-        $count = max((integer) config('movies.seed_count'), self::ROWS_PER_PAGE);
+        $count = max((int) config('movies.seed_count'), self::ROWS_PER_PAGE);
         $this->pages = ceil($count / self::ROWS_PER_PAGE);
     }
 
     /**
      * Execute the console command.
      *
+     * @param ManagesIntervalRun $intervalManager
+     *
      * @return mixed
      */
-    public function handle()
+    public function handle(ManagesIntervalRun $intervalManager)
     {
-        for ($page = 1; $page <= $this->pages; $page++) {
-            dispatch(new ImportMovies($page));
+        $intervalManager->checkNextRun();
+
+        for ($page = 1; $page <= $this->pages; ++$page) {
+            dispatch(new ImportMovies($page, $intervalManager, app(MoviesRepositoryInterface::class)));
         }
     }
 }

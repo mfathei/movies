@@ -5,7 +5,7 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.65",
@@ -54,6 +54,10 @@
         ],
         "analyze": [
             "./vendor/bin/psalm"
+        ],
+        "test": [
+            "@php artisan optimize:clear",
+            "./vendor/bin/phpunit --colors=always --order-by=defects "
         ]
     },
     "extra": {
@@ -64,7 +68,8 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "process-timeout": 10000
     },
     "minimum-stability": "dev",
     "prefer-stable": true
