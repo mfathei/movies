@@ -1,0 +1,56 @@
+{
+  "dates": { "maximum": "2021-12-22", "minimum": "2021-12-01" },
+  "page": 1,
+  "results": [
+    {
+      "adult": false,
+      "backdrop_path": "/70nxSw3mFBsGmtkvcs91PbjerwD.jpg",
+      "genre_ids": [878, 28, 12],
+      "id": 580489,
+      "original_language": "en",
+      "original_title": "Updated to diffrentiate between mocking and real data",
+      "overview": "After finding a host body in investigative reporter Eddie Brock, the alien symbiote must face a new enemy, Carnage, the alter ego of serial killer Cletus Kasady.",
+      "popularity": 8117.008,
+      "poster_path": "/rjkmN1dniUHVYAtwuV3Tji7FsDO.jpg",
+      "release_date": "2021-09-30",
+      "title": "Venom: Let There Be Carnage",
+      "video": false,
+      "vote_average": 7.2,
+      "vote_count": 2758
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/zBkHCpLmHjW2uVURs5uZkaVmgKR.jpg",
+      "genre_ids": [16, 35, 10751],
+      "id": 585245,
+      "original_language": "en",
+      "original_title": "Clifford the Big Red Dog",
+      "overview": "As Emily struggles to fit in at home and at school, she discovers a small red puppy who is destined to become her best friend. When Clifford magically undergoes one heck of a growth spurt, becomes a gigantic dog and attracts the attention of a genetics company, Emily and her Uncle Casey have to fight the forces of greed as they go on the run across New York City. Along the way, Clifford affects the lives of everyone around him and teaches Emily and her uncle the true meaning of acceptance and unconditional love.",
+      "popularity": 3031.173,
+      "poster_path": "/tY5jylU5wWaqRs8fmwkJBNzoyXB.jpg",
+      "release_date": "2021-11-10",
+      "title": "Clifford the Big Red Dog",
+      "video": false,
+      "vote_average": 7.8,
+      "vote_count": 197
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/dMuMiCrUDZ0AN0TNmBKkJ1wgKVM.jpg",
+      "genre_ids": [12, 28, 53],
+      "id": 370172,
+      "original_language": "en",
+      "original_title": "No Time to Die",
+      "overview": "Bond has left active service and is enjoying a tranquil life in Jamaica. His peace is short-lived when his old friend Felix Leiter from the CIA turns up asking for help. The mission to rescue a kidnapped scientist turns out to be far more treacherous than expected, leading Bond onto the trail of a mysterious villain armed with dangerous new technology.",
+      "popularity": 3002.089,
+      "poster_path": "/iUgygt3fscRoKWCV1d0C7FbM9TP.jpg",
+      "release_date": "2021-09-29",
+      "title": "No Time to Die",
+      "video": false,
+      "vote_average": 7.6,
+      "vote_count": 2097
+    }
+  ],
+  "total_pages": 26,
+  "total_results": 509
+}
