@@ -4,7 +4,7 @@ namespace Modules\Movies\Http\Actions;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Modules\Movies\Entities\Movie;
+use Modules\Movies\Contracts\MoviesRepositoryInterface;
 use Modules\Movies\Http\Responders\ResponderInterface;
 use Modules\Movies\Http\Requests\ListMoviesRequest;
 
@@ -16,6 +16,10 @@ class ListMoviesAction
     ];
 
     /**
+     * @var MoviesRepositoryInterface
+     */
+    protected $repository;
+    /**
      * @var \Modules\Movies\Http\Responders\ResponderInterface
      */
     protected $responder;
@@ -24,23 +28,16 @@ class ListMoviesAction
      */
     protected $request;
 
-    public function __construct(ListMoviesRequest $request, ResponderInterface $responder)
+    public function __construct(ListMoviesRequest $request, MoviesRepositoryInterface $repository, ResponderInterface $responder)
     {
+        $this->repository = $repository;
         $this->request = $request;
         $this->responder = $responder;
     }
 
     public function __invoke()
     {
-        $query = Movie::query()->when($this->request->category_id, function ($q, $category_id) {
-            return $q->whereHas('genres', function ($query) use ($category_id) {
-                return $query->where('genres.id', $category_id);
-            });
-        });
-
-        $this->parseSortParameters($this->request)->each(function ($order) use ($query) {
-            $query->orderBy($order['key'], $order['value']);
-        });
+        $query = $this->repository->filterMoviesByGenres($this->request)->addSortColumns($this->parseSortParameters($this->request))->getQuery();
 
         return $this->responder->send($query->get());
     }
@@ -49,7 +46,7 @@ class ListMoviesAction
     {
         $orderBy = collect();
         collect($request->all())->each(function ($param, $key) use ($orderBy) {
-            if (count($field = explode('|', $key)) > 1 && $newName = $this->replaceSortField($field[0])) {
+            if (count($field = explode('|', $key)) > 1 && ($newName = $this->replaceSortField($field[0]))) {
                 $orderBy->push(['key' => $newName, 'value' => $field[1] ?? 'asc']);
             }
         });

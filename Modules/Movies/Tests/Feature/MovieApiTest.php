@@ -33,7 +33,7 @@ class MovieApiTest extends TestCase
             "data" => [
                 [
                     "id" => 1,
-                    "adult" => true,
+                    "adult" => $movie->adult,
                     "backdrop_path" => $movie->backdrop_path,
                     "homepage" =>  $movie->homepage,
                     "imdb_id" => $movie->imdb_id,
