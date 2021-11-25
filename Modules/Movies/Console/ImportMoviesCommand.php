@@ -40,7 +40,7 @@ class ImportMoviesCommand extends Command
         $intervalManager->checkNextRun();
 
         for ($page = 1; $page <= $this->pages; ++$page) {
-            dispatch(new ImportMovies($page, $intervalManager, app(MoviesRepositoryInterface::class)));
+            ImportMovies::dispatch($page, $intervalManager, app(MoviesRepositoryInterface::class));
         }
     }
 }

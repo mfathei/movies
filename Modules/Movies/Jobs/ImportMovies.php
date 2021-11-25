@@ -3,21 +3,19 @@
 namespace Modules\Movies\Jobs;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Movies\Contracts\HttpServiceInterface;
 use Modules\Movies\Contracts\MoviesRepositoryInterface;
+use Modules\Movies\Services\HttpService;
 use Modules\Movies\Utilities\ManagesIntervalRun;
-use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 class ImportMovies implements ShouldQueue
 {
@@ -32,6 +30,12 @@ class ImportMovies implements ShouldQueue
     /** @var int */
     protected $page;
 
+    /** @var HttpServiceInterface */
+    protected $httpService;
+
+    /** @var ManagesIntervalRun */
+    protected $intervalManager;
+
     public function __construct(int $page, ManagesIntervalRun $intervalManager, MoviesRepositoryInterface $repository)
     {
         $this->repository = $repository;
@@ -45,11 +49,10 @@ class ImportMovies implements ShouldQueue
     public function handle()
     {
         try {
-            $res = $this->sendRequest();
+            $this->httpService = app(HttpServiceInterface::class);
+            $res = $this->httpService->setBaseUri($this->getUrl())->getData();
 
-            if (Response::HTTP_OK === $res->getStatusCode()) {
-                $this->handleResponse($res);
-            }
+            $this->handleResponse($res);
         } catch (GuzzleException $ex) {
             Log::error($ex);
 
@@ -57,28 +60,7 @@ class ImportMovies implements ShouldQueue
         }
     }
 
-    /**
-     * @throws GuzzleException
-     *
-     * @return ResponseInterface
-     */
-    protected function sendRequest(): ResponseInterface
-    {
-        $client = new Client();
-
-        return $client->request(
-            'GET',
-            $this->getUrl(),
-            [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                ],
-            ]
-        );
-    }
-
-    protected function getUrl(): string
+    public function getUrl(): string
     {
         $baseUrl = config('movies.api_url');
         $key = config('movies.api_key');
@@ -86,21 +68,17 @@ class ImportMovies implements ShouldQueue
         return "{$baseUrl}/movie/upcoming?api_key={$key}&page={$this->page}";
     }
 
-    protected function handleResponse($response)
+    protected function handleResponse($rows)
     {
-        $contents = $response->getBody()->getContents();
-
         DB::beginTransaction();
         try {
-            $rows = json_decode($contents, false, 512, JSON_THROW_ON_ERROR);
-
             Collection::wrap($rows->results)->each(function ($row) {
                 $this->repository->updateOrInsertMovie($row->id, $row);
                 $this->repository->syncGenres($row->id, $row->genre_ids);
             });
 
             DB::commit();
-            $this->intervalManager->setLastExecutionTime($this->key, now());
+            $this->intervalManager->setLastExecutionTime($this->intervalManager::KEY, now());
         } catch (Exception $e) {
             Log::error($e);
 

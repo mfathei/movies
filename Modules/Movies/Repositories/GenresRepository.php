@@ -14,7 +14,10 @@ class GenresRepository implements GenresRepositoryInterface
     {
         return Genre::updateOrInsert(
             ['id' => $id],
-            ['name' => $row->name]
+            [
+                'updated_at' => now(),
+                'name' => $row->name,
+            ]
         );
     }
 }
