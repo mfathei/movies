@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Movies\Contracts\GenresRepositoryInterface;
 use Modules\Movies\Entities\Genre;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,14 @@ class ImportGenres implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
+    /** @var GenresRepositoryInterface */
+    protected $repository;
+
+    public function __construct(GenresRepositoryInterface $genresRepository)
+    {
+        $this->repository = $genresRepository;
+    }
 
     /**
      * Execute the job.
@@ -74,10 +83,7 @@ class ImportGenres implements ShouldQueue
             $rows = json_decode($contents, false, 512, JSON_THROW_ON_ERROR);
 
             Collection::wrap($rows->genres)->each(function ($row) {
-                Genre::create([
-                    'id' => $row->id,
-                    'name' => $row->name,
-                ]);
+                $this->repository->updateOrInsertGenres($row->id, $row);
             });
 
             DB::commit();
