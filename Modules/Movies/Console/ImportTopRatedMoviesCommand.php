@@ -20,7 +20,7 @@ class ImportTopRatedMoviesCommand extends ImportMoviesCommand
     public function handle(ManagesIntervalRun $intervalManager)
     {
         $intervalManager->checkNextRun();
-        for ($page = 1; $page <= $this->pages; $page++) {
+        for ($page = 1; $page <= $this->pages; ++$page) {
             dispatch(new ImportTopRatedMovies($page));
         }
     }

@@ -3,7 +3,6 @@
 namespace Modules\Movies\Jobs;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,12 +12,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Movies\Contracts\HttpServiceInterface;
 use Modules\Movies\Contracts\MoviesRepositoryInterface;
-use Modules\Movies\Contracts\ResponseDecoderInterface;
 use Modules\Movies\Services\HttpService;
 use Modules\Movies\Utilities\ManagesIntervalRun;
-use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 class ImportMovies implements ShouldQueue
 {
@@ -33,21 +30,17 @@ class ImportMovies implements ShouldQueue
     /** @var int */
     protected $page;
 
-    /** @var HttpService */
+    /** @var HttpServiceInterface */
     protected $httpService;
-
-    /** @var ResponseDecoderInterface */
-    protected $responseDecoder;
 
     /** @var ManagesIntervalRun */
     protected $intervalManager;
 
-    public function __construct(int $page, ManagesIntervalRun $intervalManager, MoviesRepositoryInterface $repository, ResponseDecoderInterface $responseDecoder)
+    public function __construct(int $page, ManagesIntervalRun $intervalManager, MoviesRepositoryInterface $repository)
     {
         $this->repository = $repository;
         $this->intervalManager = $intervalManager;
         $this->page = $page;
-        $this->responseDecoder = $responseDecoder;
     }
 
     /**
@@ -56,9 +49,8 @@ class ImportMovies implements ShouldQueue
     public function handle()
     {
         try {
-            $this->httpService = new HttpService(new Client(), $this->responseDecoder, $this->getUrl());
-
-            $res = $this->httpService->getData();
+            $this->httpService = app(HttpServiceInterface::class);
+            $res = $this->httpService->setBaseUri($this->getUrl())->getData();
 
             $this->handleResponse($res);
         } catch (GuzzleException $ex) {
@@ -68,7 +60,7 @@ class ImportMovies implements ShouldQueue
         }
     }
 
-    protected function getUrl(): string
+    public function getUrl(): string
     {
         $baseUrl = config('movies.api_url');
         $key = config('movies.api_key');

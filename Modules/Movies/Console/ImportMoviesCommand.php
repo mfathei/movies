@@ -4,7 +4,6 @@ namespace Modules\Movies\Console;
 
 use Illuminate\Console\Command;
 use Modules\Movies\Contracts\MoviesRepositoryInterface;
-use Modules\Movies\Contracts\ResponseDecoderInterface;
 use Modules\Movies\Jobs\ImportMovies;
 use Modules\Movies\Utilities\ManagesIntervalRun;
 
@@ -41,7 +40,7 @@ class ImportMoviesCommand extends Command
         $intervalManager->checkNextRun();
 
         for ($page = 1; $page <= $this->pages; ++$page) {
-            dispatch(new ImportMovies($page, $intervalManager, app(MoviesRepositoryInterface::class), app(ResponseDecoderInterface::class)));
+            ImportMovies::dispatch($page, $intervalManager, app(MoviesRepositoryInterface::class));
         }
     }
 }

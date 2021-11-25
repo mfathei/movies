@@ -8,17 +8,18 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Modules\Movies\Contracts\HttpServiceInterface;
 use Modules\Movies\Contracts\ResponseDecoderInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class HttpService
+class HttpService implements HttpServiceInterface
 {
     protected $client;
     protected $responseDecoder;
     protected $baseUri;
     protected $headers;
 
-    public function __construct(Client $client, ResponseDecoderInterface $responseDecoder, string $baseUri, array $headers = [])
+    public function __construct(Client $client, ResponseDecoderInterface $responseDecoder, string $baseUri = null, array $headers = [])
     {
         $this->client = $client;
         $this->responseDecoder = $responseDecoder;
@@ -41,6 +42,13 @@ class HttpService
         }
 
         return null;
+    }
+
+    public function setBaseUri(string $baseUri): HttpServiceInterface
+    {
+        $this->baseUri = $baseUri;
+
+        return $this;
     }
 
     /**
