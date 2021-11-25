@@ -4,7 +4,6 @@ namespace Modules\Movies\Jobs;
 
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,9 +13,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Movies\Contracts\GenresRepositoryInterface;
-use Modules\Movies\Entities\Genre;
-use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
+use Modules\Movies\Contracts\ResponseDecoderInterface;
+use Modules\Movies\Services\HttpService;
 
 class ImportGenres implements ShouldQueue
 {
@@ -25,12 +23,19 @@ class ImportGenres implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    /** @var HttpService */
+    protected $httpService;
+
+    /** @var ResponseDecoderInterface */
+    protected $responseDecoder;
+
     /** @var GenresRepositoryInterface */
     protected $repository;
 
-    public function __construct(GenresRepositoryInterface $genresRepository)
+    public function __construct(GenresRepositoryInterface $genresRepository, ResponseDecoderInterface $responseDecoder)
     {
         $this->repository = $genresRepository;
+        $this->responseDecoder = $responseDecoder;
     }
 
     /**
@@ -39,49 +44,30 @@ class ImportGenres implements ShouldQueue
     public function handle()
     {
         try {
-            $res = $this->sendRequest();
+            $this->httpService = new HttpService(new Client(), $this->responseDecoder, $this->getUrl());
 
-            if (Response::HTTP_OK === $res->getStatusCode()) {
-                $this->handleResponse($res);
-            }
-        } catch (GuzzleException $ex) {
+            $res = $this->httpService->getData();
+
+            $this->handleResponse($res);
+        } catch (Exception $ex) {
             Log::error($ex);
 
             report($ex);
         }
     }
 
-    /**
-     * @throws GuzzleException
-     *
-     * @return ResponseInterface
-     */
-    protected function sendRequest(): ResponseInterface
+    protected function getUrl(): string
     {
-        $client = new Client();
         $baseUrl = config('movies.api_url');
         $key = config('movies.api_key');
 
-        return $client->request(
-            'GET',
-            "{$baseUrl}/genre/movie/list?api_key={$key}",
-            [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                ],
-            ]
-        );
+        return "{$baseUrl}/genre/movie/list?api_key={$key}";
     }
 
-    protected function handleResponse($response): void
+    protected function handleResponse($rows): void
     {
-        $contents = $response->getBody()->getContents();
-
         DB::beginTransaction();
         try {
-            $rows = json_decode($contents, false, 512, JSON_THROW_ON_ERROR);
-
             Collection::wrap($rows->genres)->each(function ($row) {
                 $this->repository->updateOrInsertGenres($row->id, $row);
             });

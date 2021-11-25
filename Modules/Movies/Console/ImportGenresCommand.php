@@ -4,7 +4,9 @@ namespace Modules\Movies\Console;
 
 use Illuminate\Console\Command;
 use Modules\Movies\Contracts\GenresRepositoryInterface;
+use Modules\Movies\Contracts\ResponseDecoderInterface;
 use Modules\Movies\Jobs\ImportGenres;
+use Modules\Movies\Utilities\JsonResponseDecoder;
 
 class ImportGenresCommand extends Command
 {
@@ -29,6 +31,6 @@ class ImportGenresCommand extends Command
      */
     public function handle()
     {
-        dispatch(new ImportGenres(app(GenresRepositoryInterface::class)));
+        dispatch(new ImportGenres(app(GenresRepositoryInterface::class), app(ResponseDecoderInterface::class)));
     }
 }

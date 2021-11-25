@@ -5,11 +5,13 @@ namespace Modules\Movies\Providers;
 use Illuminate\Support\ServiceProvider;
 use Modules\Movies\Contracts\GenresRepositoryInterface;
 use Modules\Movies\Contracts\MoviesRepositoryInterface;
+use Modules\Movies\Contracts\ResponseDecoderInterface;
 use Modules\Movies\Http\Actions\ListMoviesAction;
 use Modules\Movies\Http\Responders\ListMoviesJsonResponder;
 use Modules\Movies\Http\Responders\ResponderInterface;
 use Modules\Movies\Repositories\GenresRepository;
 use Modules\Movies\Repositories\MoviesRepository;
+use Modules\Movies\Utilities\JsonResponseDecoder;
 
 class DependencyServiceProvider extends ServiceProvider
 {
@@ -26,5 +28,6 @@ class DependencyServiceProvider extends ServiceProvider
 
         $this->app->bind(MoviesRepositoryInterface::class, MoviesRepository::class);
         $this->app->bind(GenresRepositoryInterface::class, GenresRepository::class);
+        $this->app->bind(ResponseDecoderInterface::class, JsonResponseDecoder::class);
     }
 }
