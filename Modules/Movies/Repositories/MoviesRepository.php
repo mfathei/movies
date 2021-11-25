@@ -35,6 +35,7 @@ class MoviesRepository implements MoviesRepositoryInterface
                 'vote_average' => $row->vote_average,
                 'vote_count' => $row->vote_count,
                 'status' => 'Released',
+                'updated_at' => now(),
             ]
         );
     }

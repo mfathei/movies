@@ -44,6 +44,7 @@ class Movie extends Model
         'video',
         'vote_average',
         'vote_count',
+        'updated_at',
     ];
 
     protected static function newFactory()

@@ -2,6 +2,7 @@
 
 namespace Modules\Movies\Console;
 
+use Modules\Movies\Contracts\MoviesRepositoryInterface;
 use Modules\Movies\Jobs\ImportTopRatedMovies;
 use Modules\Movies\Utilities\ManagesIntervalRun;
 
@@ -19,9 +20,10 @@ class ImportTopRatedMoviesCommand extends ImportMoviesCommand
      */
     public function handle(ManagesIntervalRun $intervalManager)
     {
-        $intervalManager->checkNextRun();
-        for ($page = 1; $page <= $this->pages; $page++) {
-            dispatch(new ImportTopRatedMovies($page));
+        $intervalManager->checkNextRun((int) config('movies.interval_minutes') + 10);
+
+        for ($page = 1; $page <= $this->pages; ++$page) {
+            dispatch(new ImportTopRatedMovies($page, $intervalManager, app(MoviesRepositoryInterface::class)));
         }
     }
 }
