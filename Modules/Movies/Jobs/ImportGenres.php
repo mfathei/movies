@@ -36,7 +36,7 @@ class ImportGenres implements ShouldQueue
                 $this->handleResponse($res);
             }
         } catch (GuzzleException $ex) {
-            Log::error($ex, compact(__FILE__, __LINE__));
+            Log::error($ex);
 
             report($ex);
         }
@@ -82,7 +82,7 @@ class ImportGenres implements ShouldQueue
 
             DB::commit();
         } catch (Exception $e) {
-            Log::error($e, compact(__FILE__, __LINE__));
+            Log::error($e);
 
             DB::rollBack();
         }

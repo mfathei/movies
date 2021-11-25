@@ -51,7 +51,7 @@ class ImportMovies implements ShouldQueue
                 $this->handleResponse($res);
             }
         } catch (GuzzleException $ex) {
-            Log::error($ex, compact(__FILE__, __LINE__));
+            Log::error($ex);
 
             report($ex);
         }
@@ -102,7 +102,7 @@ class ImportMovies implements ShouldQueue
             DB::commit();
             $this->intervalManager->setLastExecutionTime($this->key, now());
         } catch (Exception $e) {
-            Log::error($e, compact(__FILE__, __LINE__));
+            Log::error($e);
 
             DB::rollBack();
         }
