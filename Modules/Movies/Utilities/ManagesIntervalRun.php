@@ -9,7 +9,7 @@ use RuntimeException;
 
 class ManagesIntervalRun
 {
-    protected const KEY = 'movies_sync_interval';
+    public const KEY = 'movies_sync_interval';
 
     /** @var Carbon */
     protected $nextRun;
@@ -40,7 +40,7 @@ class ManagesIntervalRun
         });
     }
 
-    protected function setLastExecutionTime($path, Carbon $value): bool
+    public function setLastExecutionTime($path, Carbon $value): bool
     {
         if (! $path) {
             return false;
