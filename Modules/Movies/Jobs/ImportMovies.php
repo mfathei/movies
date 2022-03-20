@@ -49,8 +49,7 @@ class ImportMovies implements ShouldQueue
     public function handle()
     {
         try {
-            $this->httpService = app(HttpServiceInterface::class);
-            $res = $this->httpService->setBaseUri($this->getUrl())->getData();
+            $res = app(HttpService::class, ['baseUri' => $this->getUrl()])->getData();
 
             $this->handleResponse($res);
         } catch (GuzzleException $ex) {

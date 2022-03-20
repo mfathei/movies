@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Movies\Services;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +19,7 @@ class HttpService implements HttpServiceInterface
     protected $baseUri;
     protected $headers;
 
-    public function __construct(Client $client, ResponseDecoderInterface $responseDecoder, string $baseUri = null, array $headers = [])
+    public function __construct(ClientInterface $client, ResponseDecoderInterface $responseDecoder, string $baseUri = null, array $headers = [])
     {
         $this->client = $client;
         $this->responseDecoder = $responseDecoder;

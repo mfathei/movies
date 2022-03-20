@@ -3,7 +3,6 @@
 namespace Modules\Movies\Jobs;
 
 use Exception;
-use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -44,7 +43,7 @@ class ImportGenres implements ShouldQueue
     public function handle()
     {
         try {
-            $this->httpService = new HttpService(new Client(), $this->responseDecoder, $this->getUrl());
+            $this->httpService = app(HttpService::class, ['baseUri' => $this->getUrl()]);
 
             $res = $this->httpService->getData();
 
